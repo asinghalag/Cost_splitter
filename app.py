@@ -13,10 +13,10 @@ if 'people' not in st.session_state:
 if 'temp_expense' not in st.session_state:
     st.session_state.temp_expense = {}
 if 'form_values' not in st.session_state:
-    st.session_state.form_values = {"item_name": "", "total_cost": 0, "split_method": "Equal", "selected_people": []}
+    st.session_state.form_values = {"item_name": "", "total_cost": 0.0, "split_method": "Equal", "selected_people": []}
 
 def recalculate_totals(expenses, people):
-    totals = {person: {'total': 0, 'items': []} for person in people}
+    totals = {person: {'total': 0.0, 'items': []} for person in people}
     for expense in expenses:
         item = expense['name']
         cost = expense['cost']
@@ -44,7 +44,7 @@ def generate_csv(totals):
     return csv_file.getvalue()
 
 def reset_form_values():
-    st.session_state.form_values = {"item_name": "", "total_cost": 0, "split_method": "Equal", "selected_people": []}
+    st.session_state.form_values = {"item_name": "", "total_cost": 0.0, "split_method": "Equal", "selected_people": []}
 
 def calculate_total_expense(expenses):
     return sum(expense['cost'] for expense in expenses)
@@ -67,7 +67,7 @@ def cost_splitter_app():
             reset_form_values()
 
     if 'temp_expense' in st.session_state and st.session_state.temp_expense:
-        quantities = {person: st.number_input(f"Quantity for {person}:", min_value=0, value=1.0, format="%.2f", key=f"qty_{person}") for person in st.session_state.temp_expense['selected_people']}
+        quantities = {person: st.number_input(f"Quantity for {person}:", min_value=0.0, value=1.0, format="%.2f", key=f"qty_{person}") for person in st.session_state.temp_expense['selected_people']}
         if st.button("Add Expense with Quantities"):
             st.session_state.expenses.append({**st.session_state.temp_expense, 'quantities': quantities})
             st.session_state.temp_expense = {}
