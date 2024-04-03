@@ -67,7 +67,7 @@ def cost_splitter_app():
             reset_form_values()
 
     if 'temp_expense' in st.session_state and st.session_state.temp_expense:
-        quantities = {person: st.number_input(f"Quantity for {person}:", min_value=0.0, value=1.0, format="%.2f", key=f"qty_{person}") for person in st.session_state.temp_expense['selected_people']}
+       quantities = {person: st.number_input(f"Quantity for {person}:", min_value=0, value=0, format="%d", key=f"qty_{person}") for person in st.session_state.temp_expense['selected_people']}
         if st.button("Add Expense with Quantities"):
             st.session_state.expenses.append({**st.session_state.temp_expense, 'quantities': quantities})
             st.session_state.temp_expense = {}
