@@ -8,8 +8,8 @@ if 'expenses' not in st.session_state:
     st.session_state.expenses = []
 if 'totals' not in st.session_state:
     st.session_state.totals = {}
-if 'people' not in st.session_state:
-    st.session_state.people = ['Amit', 'Hitanshu', 'Het', 'Bijal', 'Darsh', 'Shashwat', 'Dev', 'Gaurav']
+# if 'people' not in st.session_state:
+#     st.session_state.people = ['Amit', 'Hitanshu', 'Het', 'Bijal', 'Darsh', 'Shashwat', 'Dev', 'Gaurav']
 if 'temp_expense' not in st.session_state:
     st.session_state.temp_expense = {}
 if 'form_values' not in st.session_state:
@@ -48,9 +48,15 @@ def reset_form_values():
 
 def calculate_total_expense(expenses):
     return sum(expense['cost'] for expense in expenses)
-
+    
 def cost_splitter_app():
     st.title("Cost Splitter for Shared Purchases")
+
+    people_input = st.text_input("Enter names (comma-separated)")
+    if people_input:
+        st.session_state.people = [name.strip() for name in people_input.split(',')]
+    else:
+        st.session_state.people = []
 
     item_name = st.text_input("Item Name", value=st.session_state.form_values['item_name'])
     total_cost = st.number_input("Total Cost", format="%.2f", value=st.session_state.form_values['total_cost'])
