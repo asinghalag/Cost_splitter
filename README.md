@@ -2,6 +2,8 @@
 
 A simple Streamlit application for splitting shared expenses among a group of people.
 
+https://costsplitter-asinghalag.streamlit.app/
+
 ## Description
 
 Cost Splitter is a Python-based web application built with Streamlit. It allows users to input shared expenses, specify how the costs should be split among selected individuals, and view the resulting breakdown of expenses for each person. Additionally, users can export the expense breakdown to a CSV file for further analysis or record-keeping.
