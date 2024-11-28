@@ -51,6 +51,9 @@ def calculate_total_expense(expenses):
     
 def cost_splitter_app():
     st.title("Cost Splitter for Shared Purchases")
+    st.set_page_config(page_title="Cost Splitter", page_icon="💸", layout="wide")
+    st.markdown("## Welcome to the **Cost Splitter** App! 💸")
+    st.markdown("---")
 
     people_input = st.text_input("Enter names (comma-separated)")
     if people_input:
@@ -60,8 +63,20 @@ def cost_splitter_app():
 
     item_name = st.text_input("Item Name", value=st.session_state.form_values['item_name'])
     total_cost = st.number_input("Total Cost", format="%.2f", value=st.session_state.form_values['total_cost'])
-    split_method = st.radio("Splitting Method", ['Equal', 'Weighted'], index=['Equal', 'Weighted'].index(st.session_state.form_values['split_method']))
-    selected_people = st.multiselect("Select People", st.session_state.people, default=st.session_state.form_values['selected_people'])
+    split_method = st.radio("Splitting Method", ['Equal', 'Weighted', 'Custom'])
+    selected_people = [person for person in st.session_state.people if st.checkbox(person, key=f"checkbox_{person}")]
+
+    if split_method == "Custom":
+        custom_splits = {}
+        for person in selected_people:
+            custom_splits[person] = st.number_input(f"Enter custom share for {person}:", value=0.0)
+        st.session_state.expenses.append({
+            'name': item_name,
+            'cost': total_cost,
+            'split_method': split_method,
+            'selected_people': selected_people,
+            'custom_splits': custom_splits
+        })
 
     if st.button("Next"):
         if split_method == 'Weighted':
@@ -88,14 +103,38 @@ def cost_splitter_app():
         for person, data in st.session_state.totals.items():
             st.write(f"{person}: ${data['total']:.2f}")
 
+    if 'totals' in st.session_state and st.session_state.totals:
+        st.markdown("### Cost Split Table")
+        df = pd.DataFrame([
+            {
+                "Item": item,
+                "Person": person,
+                "Cost": round(cost, 2)
+            }
+            for person, data in st.session_state.totals.items()
+            for item, cost in data['items']
+        ])  
+        st.dataframe(df)
+
+
     # Deleting an expense
     expense_names = [expense['name'] for expense in st.session_state.expenses]
     selected_expense_to_delete = st.selectbox("Select an expense to delete:", [""] + expense_names)
     
-    if st.button("Delete Expense"):
-        if selected_expense_to_delete:
-            st.session_state.expenses = [expense for expense in st.session_state.expenses if expense['name'] != selected_expense_to_delete]
+    st.markdown("### Expense History")
+    for i, expense in enumerate(st.session_state.expenses):
+        st.write(f"**{expense['name']}** - ${expense['cost']}")
+        if st.button("Edit", key=f"edit_{i}"):
+            st.session_state.form_values = expense
+            st.experimental_rerun()
+        if st.button("Delete", key=f"delete_{i}"):
+            del st.session_state.expenses[i]
             st.session_state.totals = recalculate_totals(st.session_state.expenses, st.session_state.people)
+            st.experimental_rerun()
+    #if st.button("Delete Expense"):
+     #   if selected_expense_to_delete:
+      #      st.session_state.expenses = [expense for expense in st.session_state.expenses if expense['name'] != selected_expense_to_delete]
+       #     st.session_state.totals = recalculate_totals(st.session_state.expenses, st.session_state.people)
 
     # CSV export functionality
     if st.button("Export to CSV"):
